@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -555,12 +555,15 @@ export default function SapadigiLanding() {
 
           <div className="text-center mt-12">
             <Button
-              size="lg"
-              className="bg-gray-900 hover:bg-gray-800 text-white"
-            >
-              <Zap className="mr-2 h-5 w-5" />
-              Coba SapaTools Sekarang
-            </Button>
+  size="lg"
+  className="bg-gray-900 hover:bg-gray-800 text-white"
+  asChild
+>
+  <Link href="/sapatools">
+    <Zap className="mr-2 h-5 w-5" />
+    Coba SapaTools Sekarang
+  </Link>
+</Button>
           </div>
         </div>
       </section>
