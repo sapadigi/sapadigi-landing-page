@@ -1,11 +1,12 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server";
 
 // Demo data - in production, this would come from a database
 const demoTools = [
   {
     id: "1",
     name: "Template Konten Media Sosial",
-    description: "Koleksi template Instagram, Facebook, dan TikTok siap pakai untuk berbagai niche",
+    description:
+      "Koleksi template Instagram, Facebook, dan TikTok siap pakai untuk berbagai niche",
     category: "Content",
     downloads: "2.5K",
     rating: 4.8,
@@ -15,7 +16,8 @@ const demoTools = [
   {
     id: "2",
     name: "Desain Promo UMKM",
-    description: "Template desain promosi khusus untuk usaha kecil menengah dengan berbagai tema",
+    description:
+      "Template desain promosi khusus untuk usaha kecil menengah dengan berbagai tema",
     category: "Design",
     downloads: "1.8K",
     rating: 4.9,
@@ -32,36 +34,42 @@ const demoTools = [
     difficulty: "Menengah",
     features: ["Drag & Drop", "Responsive", "SEO Friendly"],
   },
-]
+];
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // In production, verify JWT token here
     return NextResponse.json({
       success: true,
       tools: demoTools,
-    })
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch tools" }, { status: 500 })
+    });
+  } catch (_) {
+    return NextResponse.json(
+      { error: "Failed to fetch tools" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     // In production, verify JWT token here
-    const toolData = await request.json()
+    const toolData = await request.json();
 
     // In production, save to database
     const newTool = {
       id: Date.now().toString(),
       ...toolData,
-    }
+    };
 
     return NextResponse.json({
       success: true,
       tool: newTool,
-    })
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to create tool" }, { status: 500 })
+    });
+  } catch (_) {
+    return NextResponse.json(
+      { error: "Failed to create tool" },
+      { status: 500 }
+    );
   }
 }

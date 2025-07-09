@@ -28,10 +28,23 @@ import {
   UserCheck,
   Lightbulb,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function SapadigiLanding() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState({});
+  const [isVisible, setIsVisible] = useState<{
+    beranda: boolean;
+    "kenapa-sapadigi": boolean;
+    sapatools: boolean;
+    sapamarket: boolean;
+    testimoni: boolean;
+  }>({
+    beranda: false,
+    "kenapa-sapadigi": false,
+    sapatools: false,
+    sapamarket: false,
+    testimoni: false,
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -337,7 +350,7 @@ export default function SapadigiLanding() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div
               className={`space-y-8 ${
-                isVisible.beranda ? "animate-fade-in-up" : "opacity-0"
+                isVisible ? "animate-fade-in-up" : "opacity-0"
               }`}
             >
               <div className="space-y-4">
@@ -363,11 +376,13 @@ export default function SapadigiLanding() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
-                  size="lg"
-                  className="bg-gray-900 hover:bg-gray-800 text-white text-lg px-8 py-3"
+                  size={"lg"}
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl relative overflow-hidden group"
                 >
                   <Play className="mr-2 h-5 w-5" />
-                  Mulai Sekarang
+                  <span className="relative z-10">Mulai Sekarang</span>
+                  {/* Flying bullet effect on button */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 </Button>
                 <Button
                   size="lg"
@@ -402,7 +417,9 @@ export default function SapadigiLanding() {
             >
               <div className="relative">
                 <div className="bg-gradient-to-br from-gray-100 to-stone-100 rounded-3xl p-8 lg:p-12">
-                  <img
+                  <Image
+                    width={500}
+                    height={400}
                     src="/placeholder.svg?height=400&width=500"
                     alt="Ilustrasi inklusif komunitas digital Sapadigi"
                     className="w-full h-auto rounded-2xl shadow-lg"
@@ -647,7 +664,7 @@ export default function SapadigiLanding() {
                     ))}
                   </div>
                   <CardDescription className="text-gray-600 leading-relaxed italic">
-                    "{testimonial.content}"
+                    &quot;{testimonial.content}&quot;
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -736,7 +753,7 @@ export default function SapadigiLanding() {
               mulai dari satu langkah kecil: menyapa dunia digital.
               <br />
               <span className="text-gray-200">
-                Kami bantu kamu dari "halo" sampai "bisa".
+                Kami bantu kamu dari &quot;halo&quot; sampai &quot;bisa&quot;.
               </span>
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

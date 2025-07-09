@@ -1,98 +1,119 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import Tabs, { TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { LogOut, Plus, Edit, Trash2, Users, Download, ShoppingBag, BarChart3, Settings, Eye, Star } from "lucide-react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  LogOut,
+  Plus,
+  Edit,
+  Trash2,
+  Users,
+  Download,
+  ShoppingBag,
+  BarChart3,
+  Settings,
+  Eye,
+  Star,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface User {
-  email: string
-  name: string
-  role: string
+  email: string;
+  name: string;
+  role: string;
 }
 
 interface Tool {
-  id: string
-  name: string
-  description: string
-  category: string
-  downloads: string
-  rating: number
-  difficulty: string
-  features: string[]
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  downloads: string;
+  rating: number;
+  difficulty: string;
+  features: string[];
 }
 
 interface Product {
-  id: string
-  name: string
-  description: string
-  price: string
-  category: string
-  rating: number
-  reviews: number
-  bestseller: boolean
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  category: string;
+  rating: number;
+  reviews: number;
+  bestseller: boolean;
 }
 
 export default function AdminDashboard() {
-  const [user, setUser] = useState<User | null>(null)
-  const [activeTab, setActiveTab] = useState("overview")
-  const [tools, setTools] = useState<Tool[]>([])
-  const [products, setProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     // Check authentication
-    const token = localStorage.getItem("adminToken")
+    const token = localStorage.getItem("adminToken");
     if (!token) {
-      router.push("/login")
-      return
+      router.push("/login");
+      return;
     }
 
     // Decode token to get user info (in production, verify with server)
     try {
-      const payload = JSON.parse(atob(token.split(".")[1]))
-      setUser(payload)
-      loadData()
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setUser(payload);
+      loadData();
     } catch (error) {
-      console.error("Invalid token:", error)
-      localStorage.removeItem("adminToken")
-      router.push("/login")
+      console.error("Invalid token:", error);
+      localStorage.removeItem("adminToken");
+      router.push("/login");
     }
-  }, [router])
+  }, [router]);
 
   const loadData = async () => {
     try {
       // Load tools and products data
-      const [toolsRes, productsRes] = await Promise.all([fetch("/api/admin/tools"), fetch("/api/admin/products")])
+      const [toolsRes, productsRes] = await Promise.all([
+        fetch("/api/admin/tools"),
+        fetch("/api/admin/products"),
+      ]);
 
       if (toolsRes.ok) {
-        const toolsData = await toolsRes.json()
-        setTools(toolsData.tools || [])
+        const toolsData = await toolsRes.json();
+        setTools(toolsData.tools || []);
       }
 
       if (productsRes.ok) {
-        const productsData = await productsRes.json()
-        setProducts(productsData.products || [])
+        const productsData = await productsRes.json();
+        setProducts(productsData.products || []);
       }
     } catch (error) {
-      console.error("Error loading data:", error)
+      console.error("Error loading data:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem("adminToken")
-    router.push("/login")
-  }
+    localStorage.removeItem("adminToken");
+    router.push("/login");
+  };
 
   const handleDeleteTool = async (toolId: string) => {
-    if (!confirm("Yakin ingin menghapus tool ini?")) return
+    if (!confirm("Yakin ingin menghapus tool ini?")) return;
 
     try {
       const response = await fetch(`/api/admin/tools/${toolId}`, {
@@ -100,18 +121,18 @@ export default function AdminDashboard() {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
-      })
+      });
 
       if (response.ok) {
-        setTools(tools.filter((tool) => tool.id !== toolId))
+        setTools(tools.filter((tool) => tool.id !== toolId));
       }
     } catch (error) {
-      console.error("Error deleting tool:", error)
+      console.error("Error deleting tool:", error);
     }
-  }
+  };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (!confirm("Yakin ingin menghapus produk ini?")) return
+    if (!confirm("Yakin ingin menghapus produk ini?")) return;
 
     try {
       const response = await fetch(`/api/admin/products/${productId}`, {
@@ -119,15 +140,15 @@ export default function AdminDashboard() {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
-      })
+      });
 
       if (response.ok) {
-        setProducts(products.filter((product) => product.id !== productId))
+        setProducts(products.filter((product) => product.id !== productId));
       }
     } catch (error) {
-      console.error("Error deleting product:", error)
+      console.error("Error deleting product:", error);
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -137,11 +158,11 @@ export default function AdminDashboard() {
           <p className="text-gray-600">Loading dashboard...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!user) {
-    return null
+    return null;
   }
 
   return (
@@ -207,18 +228,24 @@ export default function AdminDashboard() {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Tools</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Total Tools
+                  </CardTitle>
                   <Settings className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{tools.length}</div>
-                  <p className="text-xs text-muted-foreground">Tools tersedia</p>
+                  <p className="text-xs text-muted-foreground">
+                    Tools tersedia
+                  </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Produk</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Total Produk
+                  </CardTitle>
                   <ShoppingBag className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -229,23 +256,31 @@ export default function AdminDashboard() {
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Downloads</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Total Downloads
+                  </CardTitle>
                   <Download className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">15.2K</div>
-                  <p className="text-xs text-muted-foreground">+12% dari bulan lalu</p>
+                  <p className="text-xs text-muted-foreground">
+                    +12% dari bulan lalu
+                  </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Rating Rata-rata</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Rating Rata-rata
+                  </CardTitle>
                   <Star className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">4.8</div>
-                  <p className="text-xs text-muted-foreground">Dari semua produk</p>
+                  <p className="text-xs text-muted-foreground">
+                    Dari semua produk
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -254,15 +289,22 @@ export default function AdminDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Tools Populer</CardTitle>
-                  <CardDescription>Tools dengan download terbanyak</CardDescription>
+                  <CardDescription>
+                    Tools dengan download terbanyak
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {tools.slice(0, 5).map((tool) => (
-                      <div key={tool.id} className="flex items-center justify-between">
+                      <div
+                        key={tool.id}
+                        className="flex items-center justify-between"
+                      >
                         <div>
                           <p className="font-medium">{tool.name}</p>
-                          <p className="text-sm text-gray-500">{tool.category}</p>
+                          <p className="text-sm text-gray-500">
+                            {tool.category}
+                          </p>
                         </div>
                         <Badge variant="secondary">{tool.downloads}</Badge>
                       </div>
@@ -274,7 +316,9 @@ export default function AdminDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Produk Terlaris</CardTitle>
-                  <CardDescription>Produk dengan penjualan terbaik</CardDescription>
+                  <CardDescription>
+                    Produk dengan penjualan terbaik
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -282,12 +326,19 @@ export default function AdminDashboard() {
                       .filter((p) => p.bestseller)
                       .slice(0, 5)
                       .map((product) => (
-                        <div key={product.id} className="flex items-center justify-between">
+                        <div
+                          key={product.id}
+                          className="flex items-center justify-between"
+                        >
                           <div>
                             <p className="font-medium">{product.name}</p>
-                            <p className="text-sm text-gray-500">{product.price}</p>
+                            <p className="text-sm text-gray-500">
+                              {product.price}
+                            </p>
                           </div>
-                          <Badge className="bg-red-100 text-red-700">Bestseller</Badge>
+                          <Badge className="bg-red-100 text-red-700">
+                            Bestseller
+                          </Badge>
                         </div>
                       ))}
                   </div>
@@ -314,7 +365,9 @@ export default function AdminDashboard() {
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-lg">{tool.name}</CardTitle>
-                        <CardDescription className="mt-2">{tool.description}</CardDescription>
+                        <CardDescription className="mt-2">
+                          {tool.description}
+                        </CardDescription>
                       </div>
                       <div className="flex space-x-2">
                         <Link href={`/admin/tools/${tool.id}/edit`}>
@@ -343,8 +396,8 @@ export default function AdminDashboard() {
                           tool.difficulty === "Pemula"
                             ? "bg-green-100 text-green-700"
                             : tool.difficulty === "Menengah"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-red-100 text-red-700"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
                         }
                       >
                         {tool.difficulty}
@@ -373,8 +426,12 @@ export default function AdminDashboard() {
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div>
-                        <CardTitle className="text-lg">{product.name}</CardTitle>
-                        <CardDescription className="mt-2">{product.description}</CardDescription>
+                        <CardTitle className="text-lg">
+                          {product.name}
+                        </CardTitle>
+                        <CardDescription className="mt-2">
+                          {product.description}
+                        </CardDescription>
                       </div>
                       <div className="flex space-x-2">
                         <Link href={`/admin/products/${product.id}/edit`}>
@@ -396,11 +453,17 @@ export default function AdminDashboard() {
                   <CardContent>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <Badge variant="secondary">{product.category}</Badge>
-                      <span className="font-medium text-gray-900">{product.price}</span>
+                      <span className="font-medium text-gray-900">
+                        {product.price}
+                      </span>
                       <span>
                         Rating: {product.rating} ({product.reviews} ulasan)
                       </span>
-                      {product.bestseller && <Badge className="bg-red-100 text-red-700">Bestseller</Badge>}
+                      {product.bestseller && (
+                        <Badge className="bg-red-100 text-red-700">
+                          Bestseller
+                        </Badge>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -438,5 +501,5 @@ export default function AdminDashboard() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

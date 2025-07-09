@@ -1,90 +1,109 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Plus, X } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ArrowLeft, Plus, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Tool {
-  id: string
-  name: string
-  description: string
-  category: string
-  difficulty: string
-  features: string[]
-  downloads: string
-  rating: number
-  icon?: string
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  features: string[];
+  downloads: string;
+  rating: number;
+  icon?: string;
 }
 
 export default function EditToolPage({ params }: { params: { id: string } }) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingData, setIsLoadingData] = useState(true)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
-  const [features, setFeatures] = useState<string[]>([])
-  const [newFeature, setNewFeature] = useState("")
-  const [tool, setTool] = useState<Tool | null>(null)
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [features, setFeatures] = useState<string[]>([]);
+  const [newFeature, setNewFeature] = useState("");
+  const [tool, setTool] = useState<Tool | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     category: "",
     difficulty: "",
     icon: "",
-  })
-  const router = useRouter()
+  });
+  const router = useRouter();
 
-  const categories = ["Content", "Design", "Website", "Automation", "Career", "Business"]
-  const difficulties = ["Pemula", "Menengah", "Lanjutan"]
+  const categories = [
+    "Content",
+    "Design",
+    "Website",
+    "Automation",
+    "Career",
+    "Business",
+  ];
+  const difficulties = ["Pemula", "Menengah", "Lanjutan"];
 
   useEffect(() => {
-    loadTool()
-  }, [params.id])
+    loadTool(params.id);
+  }, [params.id]);
 
-  const loadTool = async () => {
+  const loadTool = async (id?: string) => {
     try {
-      const response = await fetch(`/api/admin/tools/${params.id}`, {
+      const response = await fetch(`/api/admin/tools/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
-      })
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        const toolData = data.tool
-        setTool(toolData)
+        const data = await response.json();
+        const toolData = data.tool;
+        setTool(toolData);
         setFormData({
           name: toolData.name,
           description: toolData.description,
           category: toolData.category,
           difficulty: toolData.difficulty,
           icon: toolData.icon || "",
-        })
-        setFeatures(toolData.features || [])
+        });
+        setFeatures(toolData.features || []);
       } else {
-        setError("Tool tidak ditemukan")
+        setError("Tool tidak ditemukan");
       }
-    } catch (err) {
-      setError("Gagal memuat data tool")
+    } catch (_) {
+      setError("Gagal memuat data tool");
     } finally {
-      setIsLoadingData(false)
+      setIsLoadingData(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    setSuccess("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
       const response = await fetch(`/api/admin/tools/${params.id}`, {
@@ -97,42 +116,44 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
           ...formData,
           features,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to update tool")
+        throw new Error(data.error || "Failed to update tool");
       }
 
-      setSuccess("Tool berhasil diperbarui!")
+      setSuccess("Tool berhasil diperbarui!");
       setTimeout(() => {
-        router.push("/admin")
-      }, 2000)
+        router.push("/admin");
+      }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update tool")
+      setError(err instanceof Error ? err.message : "Failed to update tool");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   const addFeature = () => {
     if (newFeature.trim() && !features.includes(newFeature.trim())) {
-      setFeatures([...features, newFeature.trim()])
-      setNewFeature("")
+      setFeatures([...features, newFeature.trim()]);
+      setNewFeature("");
     }
-  }
+  };
 
   const removeFeature = (index: number) => {
-    setFeatures(features.filter((_, i) => i !== index))
-  }
+    setFeatures(features.filter((_, i) => i !== index));
+  };
 
   if (isLoadingData) {
     return (
@@ -142,20 +163,22 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
           <p className="text-gray-600">Loading tool data...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!tool) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Tool Tidak Ditemukan</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Tool Tidak Ditemukan
+          </h2>
           <Link href="/admin">
             <Button>Kembali ke Dashboard</Button>
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -172,7 +195,9 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
               <span>Kembali ke Dashboard</span>
             </Link>
             <div className="h-6 w-px bg-gray-300"></div>
-            <h1 className="text-xl font-bold text-gray-900">Edit Tool: {tool.name}</h1>
+            <h1 className="text-xl font-bold text-gray-900">
+              Edit Tool: {tool.name}
+            </h1>
           </div>
         </div>
       </header>
@@ -183,19 +208,25 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
           <Card>
             <CardHeader>
               <CardTitle>Edit Informasi Tool</CardTitle>
-              <CardDescription>Perbarui informasi tool di SapaTools</CardDescription>
+              <CardDescription>
+                Perbarui informasi tool di SapaTools
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
                   <Alert className="border-red-200 bg-red-50">
-                    <AlertDescription className="text-red-700">{error}</AlertDescription>
+                    <AlertDescription className="text-red-700">
+                      {error}
+                    </AlertDescription>
                   </Alert>
                 )}
 
                 {success && (
                   <Alert className="border-green-200 bg-green-50">
-                    <AlertDescription className="text-green-700">{success}</AlertDescription>
+                    <AlertDescription className="text-green-700">
+                      {success}
+                    </AlertDescription>
                   </Alert>
                 )}
 
@@ -229,7 +260,9 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
                     <Label htmlFor="category">Kategori *</Label>
                     <Select
                       value={formData.category}
-                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, category: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih kategori" />
@@ -248,7 +281,9 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
                     <Label htmlFor="difficulty">Tingkat Kesulitan *</Label>
                     <Select
                       value={formData.difficulty}
-                      onValueChange={(value) => setFormData({ ...formData, difficulty: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, difficulty: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih tingkat kesulitan" />
@@ -282,9 +317,15 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
                       value={newFeature}
                       onChange={(e) => setNewFeature(e.target.value)}
                       placeholder="Tambah fitur tool"
-                      onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addFeature())}
+                      onKeyPress={(e) =>
+                        e.key === "Enter" && (e.preventDefault(), addFeature())
+                      }
                     />
-                    <Button type="button" onClick={addFeature} variant="outline">
+                    <Button
+                      type="button"
+                      onClick={addFeature}
+                      variant="outline"
+                    >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -310,7 +351,9 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">Statistik Tool</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Statistik Tool
+                  </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-500">Downloads:</span>
@@ -339,5 +382,5 @@ export default function EditToolPage({ params }: { params: { id: string } }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
