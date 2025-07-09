@@ -420,8 +420,8 @@ export default function SapadigiLanding() {
                   <Image
                     width={500}
                     height={400}
-                    src="/sapadigi-header.png?height=400&width=500"
-                    alt="Ilustrasi inklusif komunitas digital Sapadigi"
+                    src="/sapadigi-header.png"
+                    alt="Ilustrasi komunitas digital Sapadigi"
                     className="w-full h-auto rounded-2xl shadow-lg"
                   />
                 </div>
