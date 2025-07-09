@@ -420,7 +420,7 @@ export default function SapadigiLanding() {
                   <Image
                     width={500}
                     height={400}
-                    src="/placeholder.svg?height=400&width=500"
+                    src="/sapadigi-header.png?height=400&width=500"
                     alt="Ilustrasi inklusif komunitas digital Sapadigi"
                     className="w-full h-auto rounded-2xl shadow-lg"
                   />
